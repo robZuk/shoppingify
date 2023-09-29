@@ -1,32 +1,44 @@
-const path = require("path");
-const express = require("express");
-const colors = require("colors");
-const dotenv = require("dotenv").config();
-const connectDB = require("./config/db");
-const { errorHandler } = require("./middleware/errorMiddleware");
-const cors = require("cors");
+import path from "path";
+import express from "express";
+import colors from "colors";
+import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+import connectDB from "./config/db.js";
+import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
+import cors from "cors";
+import productRoutes from "./routes/productRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import listRoutes from "./routes/listRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
+import uploadRoutes from "./routes/uploadRoutes.js";
 
+dotenv.config();
 connectDB();
 
 const port = process.env.PORT || 5000;
 
 const app = express();
-app.use(cors());
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "https://shoppingify-frontend.onrender.com",
+    origin: "http://127.0.0.1:5173",
+    credentials: true,
   })
 );
+const __dirname = path.resolve();
 
-app.use(express.json());
+app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
+app.use("/api/users", userRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/lists", listRoutes);
+app.use("/api/upload", uploadRoutes);
+
+app.use(notFound);
 app.use(errorHandler);
-
-app.use("/api/uploads", express.static(path.join(__dirname, "uploads")));
-app.use("/api/users", require("./routes/userRoutes"));
-app.use("/api/categories", require("./routes/categoriesRoutes"));
-app.use("/api/products", require("./routes/productsRoutes"));
-app.use("/api/lists", require("./routes/listsRoutes"));
-app.use("/api/upload", require("./routes/uploadRoutes"));
 
 app.listen(port, () => console.log(`Server started on port ${port}`));

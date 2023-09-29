@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const listSchema = mongoose.Schema(
   {
@@ -10,55 +10,21 @@ const listSchema = mongoose.Schema(
     name: {
       type: String,
       required: true,
-      // unique: true,
       lowercase: true,
     },
-    // price: {
-    //   type: String,
-    //   required: true,
-    //   unique: true,
-    //   lowercase: true,
-    // },
-    // categories: [
-    //   {
-    //     category: {
-    //       type: mongoose.Schema.Types.ObjectId,
-    //       required: true,
-    //       ref: "Category",
-    //     },
-    //   },
-    // ],
     products: { type: Array, required: true },
-    // products: [
-    //   {
-    //     product: {
-    //       type: mongoose.Schema.Types.ObjectId,
-    //       required: true,
-    //       ref: "Product",
-    //     },
-    //     // confirmed: false,
-    //   },
-    // ],
-    // completed: {
-    //   type: Boolean,
-    //   default: false,
-    // },
     status: {
       type: String,
       required: true,
       enum: ["active", "completed", "cancelled"],
       default: "active",
     },
-    // products: [
-    //   {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "Product",
-    //   },
-    // ],
   },
   {
     timestamps: true,
   }
 );
 
-module.exports = mongoose.model("List", listSchema);
+const List = mongoose.model("List", listSchema);
+
+export default List;

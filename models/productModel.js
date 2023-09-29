@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const productSchema = mongoose.Schema(
   {
@@ -12,7 +12,6 @@ const productSchema = mongoose.Schema(
       type: String,
       required: true,
       lowercase: true,
-      // unique: true,
     },
     note: {
       type: String,
@@ -26,21 +25,12 @@ const productSchema = mongoose.Schema(
       required: true,
       ref: "Category",
     },
-    // selected: {
-    //   type: String,
-    //   required: true,
-    //   enum: ['notSelected', 'selected'],
-    //   default: 'notSelected',
-    // },
-    // selected: {
-    //   type: Boolean,
-    //   default: false,
-    //   required: true,
-    // },
   },
   {
     timestamps: true,
   }
 );
 
-module.exports = mongoose.model("Product", productSchema);
+const Product = mongoose.model("Product", productSchema);
+
+export default Product;

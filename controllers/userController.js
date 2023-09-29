@@ -1,66 +1,72 @@
-const jwt = require("jsonwebtoken");
-const User = require("../models/userModel");
-
-// Generate JWT
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: "30d",
-  });
-};
+import asyncHandler from "../middleware/asyncHandler.js";
+import User from "../models/userModel.js";
+import generateToken from "../utils/generateToken.js";
 
 // @desc    Register new user
 // @route   POST /api/users
 // @access  Public
-const registerUser = async (req, res) => {
+const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
-  try {
-    const user = await User.signup(name, email, password);
+  const userExists = await User.findOne({ email });
 
-    if (user) {
-      res.status(201).json({
-        _id: user.id,
-        name: user.name,
-        email: user.email,
-        //_id, name, email doesn't necesarry
-        token: generateToken(user._id),
-      });
-    }
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+  if (userExists) {
+    res.status(400);
+    throw new Error("User already exists");
   }
-};
+
+  const user = await User.create({
+    name,
+    email,
+    password,
+  });
+
+  if (user) {
+    generateToken(res, user._id);
+
+    res.status(201).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      // isAdmin: user.isAdmin,
+    });
+  } else {
+    res.status(400);
+    throw new Error("Invalid user data");
+  }
+});
 
 // @desc    Authenticate a user
 // @route   POST /api/users/login
 // @access  Public
-const loginUser = async (req, res) => {
+const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  try {
-    const user = await User.login(email, password);
-    if (user) {
-      res.status(200).json({
-        _id: user.id,
-        name: user.name,
-        email: user.email,
-        token: generateToken(user._id),
-      });
-    }
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+  const user = await User.findOne({ email });
+
+  if (user && (await user.matchPassword(password))) {
+    generateToken(res, user._id);
+
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+    });
+  } else {
+    res.status(401);
+    throw new Error("Invalid email or password");
   }
+});
+
+// @desc    Logout user / clear cookie
+// @route   POST /api/users/logout
+// @access  Public
+const logoutUser = (req, res) => {
+  res.cookie("jwt", "", {
+    httpOnly: true,
+    expires: new Date(0),
+  });
+  res.status(200).json({ message: "Logged out successfully" });
 };
 
-// @desc    Get user data
-// @route   GET /api/users/me
-// @access  Private
-const getMe = async (req, res) => {
-  res.status(200).json(req.user);
-};
-
-module.exports = {
-  registerUser,
-  loginUser,
-  getMe,
-};
+export { registerUser, loginUser, logoutUser };

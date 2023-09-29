@@ -1,15 +1,15 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
-const {
+import {
   createList,
   updateListStatus,
   getLists,
   getList,
-} = require("../controllers/listController");
+} from "../controllers/listController.js";
 
-const { protect } = require("../middleware/authMiddleware");
+import { protect } from "../middleware/authMiddleware.js";
 
 router.route("/").get(protect, getLists).post(protect, createList);
 router.route("/:id").get(protect, getList).put(protect, updateListStatus);
 
-module.exports = router;
+export default router;

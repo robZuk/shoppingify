@@ -1,35 +1,28 @@
-const jwt = require("jsonwebtoken");
-const User = require("../models/userModel");
-
-const protect = async (req, res, next) => {
+import jwt from "jsonwebtoken";
+import User from "../models/userModel.js";
+import asyncHandler from "./asyncHandler.js";
+const protect = asyncHandler(async (req, res, next) => {
   let token;
 
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
-    try {
-      // Get token from header
-      token = req.headers.authorization.split(" ")[1];
+  // Read JWT from the 'jwt' cookie
+  token = req.cookies.jwt;
 
-      // Verify token
+  if (token) {
+    try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      // Get user from the token
-      req.user = await User.findById(decoded.id).select("-password");
+      req.user = await User.findById(decoded.userId).select("-password");
 
       next();
     } catch (error) {
-      console.log(error);
+      console.error(error);
       res.status(401);
-      throw new Error("Not authorized");
+      throw new Error("Not authorized, token failed");
     }
-  }
-
-  if (!token) {
+  } else {
     res.status(401);
     throw new Error("Not authorized, no token");
   }
-};
+});
 
-module.exports = { protect };
+export { protect };
