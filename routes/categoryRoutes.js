@@ -7,6 +7,6 @@ import {
 
 import { protect } from "../middleware/authMiddleware.js";
 
-router.route("/").get(getCategories).post(protect, createCategory);
+router.route("/").get(protect, getCategories).post(protect, createCategory);
 
 export default router;
