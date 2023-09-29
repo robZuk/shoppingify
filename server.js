@@ -23,12 +23,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use(
-  cors({
-    origin: "https://shoppingify-frontend.onrender.com/",
-    credentials: true,
-  })
-);
+app.use(cors());
+// app.use(
+//   cors({
+//     origin: "https://shoppingify-frontend.onrender.com/",
+//     credentials: true,
+//   })
+// );
 const __dirname = path.resolve();
 
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
