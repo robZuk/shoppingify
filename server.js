@@ -29,6 +29,12 @@ app.use(
     credentials: true,
   })
 );
+app.use(
+  cors({
+    origin: "https://fabulous-souffle-54b7b6.netlify.app",
+    credentials: true,
+  })
+);
 // app.use(
 //   cors({
 //     origin: "http://127.0.0.1:5173",
