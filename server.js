@@ -29,18 +29,7 @@ app.use(
     credentials: true,
   })
 );
-// app.use(
-//   cors({
-//     origin: "https://fabulous-souffle-54b7b6.netlify.app",
-//     credentials: true,
-//   })
-// );
-// app.use(
-//   cors({
-//     origin: "http://localhost:5173",
-//     credentials: true,
-//   })
-// );
+
 const __dirname = path.resolve();
 
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
