@@ -14,10 +14,8 @@ const getProducts = asyncHandler(async (req, res) => {
         },
       }
     : {};
-  // const products = await Product.find({ ...keyword, user: req.user._id });
-  const products = await Product.find({ ...keyword });
-  // const products = [1, 2];
-  res.status(200).json(products);
+   const products = await Product.find({ ...keyword, user: req.user._id });
+ res.status(200).json(products);
 });
 
 // @desc    Get product
